@@ -135,18 +135,18 @@ public class Ab1Impl implements Ab1 {
 	}
 
 	private int medianOfThreePivot(int[] array, int leftCursor, int rightCursor) {
-		int centerPositon = (leftCursor + rightCursor) / 2;
+		int centerPosition = (leftCursor + rightCursor) / 2;
 
-		if (array[rightCursor] < array[centerPositon]) {
-			swapElements(array, centerPositon, rightCursor);
+		if (array[rightCursor] < array[centerPosition]) {
+			swapElements(array, centerPosition, rightCursor);
 		}
 		if (array[rightCursor] < array[leftCursor]) {
 			swapElements(array, leftCursor, rightCursor);
 		}
-		if (array[centerPositon] < array[leftCursor]) {
-			swapElements(array, leftCursor, centerPositon);
+		if (array[centerPosition] < array[leftCursor]) {
+			swapElements(array, leftCursor, centerPosition);
 		}
-		swapElements(array, centerPositon, rightCursor-1);
+		swapElements(array, centerPosition, rightCursor-1);
 		return array[rightCursor-1];
 	}
 
@@ -160,20 +160,78 @@ public class Ab1Impl implements Ab1 {
 	@Override
 	public void toMinHeap(int[] data)
 	{
-		// YOUR CODE HERE
+		toHeap(data, data.length-1, true);
+	}
+
+	// Aufgabe c)
+	public void toMaxHeap(int[] data)
+	{
+		toHeap(data, data.length-1, false);
 	}
 
 	// Aufgabe c)
 	@Override
 	public void removeHeapElement(int position, int length, int[] minHeap)
 	{
-		// YOUR CODE HERE
+		if (position < length) {
+			swapElements(minHeap, position, length-1);
+			toHeap(minHeap, minHeap.length-2, true);
+		}
 	}
 
 	// Aufgabe c)
 	@Override
 	public void heapsort(int[] data)
 	{
-		// YOUR CODE HERE
+		int lastIndex = data.length-1;
+		while(lastIndex > 0) {
+			toHeap(data, lastIndex, false);
+			swapElements(data, 0, lastIndex);
+			lastIndex--;
+		}
+	}
+
+	private void toHeap(int[] data, int rightCursor, boolean toMinHeap)
+	{
+		boolean swapHappened = true;
+		while(swapHappened) {
+			for (int i = 0; i < (rightCursor+1); i++) {
+				int twoKIndex = 2*(i+1)-1;
+				int twoKPlusOneIndex = 2*(i+1);
+
+				if (checkHeapConditions(data, i, twoKIndex, twoKPlusOneIndex, rightCursor, toMinHeap)) {
+					swapHappened = true;
+					break;
+				}
+				swapHappened = false;
+			}
+		}
+	}
+
+	private boolean checkHeapConditions(int[] data, int elementIndex, int twoKIndex, int twoKPlusOneIndex, int rightCursor, boolean checkForMinHeap) {
+		if (checkHeapCondition(data, elementIndex, twoKIndex, rightCursor, checkForMinHeap)) {
+			return true;
+		}
+		if (checkHeapCondition(data, elementIndex, twoKPlusOneIndex, rightCursor, checkForMinHeap)) {
+			return true;
+		}
+		return false;
+	}
+
+	private boolean checkHeapCondition(int[] data, int elementIndex, int checkedIndex, int rightCursor, boolean checkForMinHeap) {
+		if (checkedIndex <= rightCursor) {
+			if (!checkForMinHeap) {
+				if (data[elementIndex] < data[checkedIndex]) {
+					swapElements(data, elementIndex, checkedIndex);
+					return true;
+				}
+			} else {
+				if (data[elementIndex] > data[checkedIndex]) {
+					swapElements(data, elementIndex, checkedIndex);
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 }

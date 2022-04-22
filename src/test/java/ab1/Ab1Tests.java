@@ -46,7 +46,8 @@ public class Ab1Tests {
 		ll.tail = e5;
 
 		//array = new int[]{7,8,10,2,26,4,19,5,3,16,11,6,13,12};
-		array = new int[]{34,7000,12,3213,5,321,5432,12,1,32,5,23,1,2,3,4};
+		//array = new int[]{34,7000,12,3213,5,321,5432,12,1,32,5,23,1,2,3,4};
+		array = new int[]{10,14,8,11,7,4,9,1,7,3,15,2,6,12};
 	}
 
 	@Test
@@ -80,11 +81,41 @@ public class Ab1Tests {
 	@Test
 	public void testQuickSort() {
 		ab1Impl.quicksort(array);
+		int[] expectedResult = new int[]{1,2,3,4,6,7,7,8,9,10,11,12,14,15};
 
-		String output = "";
 		for (int i = 0; i < array.length; i++) {
-			output += " " + array[i];
+			assertEquals(expectedResult[i], array[i]);
 		}
-		System.out.println(output);
+	}
+
+	@Test
+	public void testMinHeap() {
+		ab1Impl.toMinHeap(array);
+		int[] expectedResult = new int[]{1,3,2,7,4,6,9,14,8,11,15,10,7,12};
+
+		for (int i = 0; i < array.length; i++) {
+			assertEquals(expectedResult[i], array[i]);
+		}
+	}
+
+	@Test
+	public void testRemoveHeapElement() {
+		ab1Impl.toMinHeap(array);
+		ab1Impl.removeHeapElement(2, array.length, array);
+		int[] expectedResult = new int[]{1,3,6,7,4,7,9,14,8,11,15,12,10,2};
+
+		for (int i = 0; i < array.length; i++) {
+			assertEquals(expectedResult[i], array[i]);
+		}
+	}
+
+	@Test
+	public void testHeapsort() {
+		ab1Impl.heapsort(array);
+		int[] expectedResult = new int[]{1,2,3,4,6,7,7,8,9,10,11,12,14,15};
+
+		for (int i = 0; i < array.length; i++) {
+			assertEquals(expectedResult[i], array[i]);
+		}
 	}
 }
