@@ -6,19 +6,36 @@ public class Ab1Impl implements Ab1 {
 
 	// Aufgabe a)
 	@Override
-	public ListNode insert(LinkedList list, int value)
+	public LinkedList insert(LinkedList list, int value)
 	{
+		if (list.head == null && list.tail == null) {
+			ListNode newElement = new ListNode();
+			newElement.value = value;
+			list.head = newElement;
+			list.tail = newElement;
+
+			return list;
+		}
+
 		if (Math.abs(list.head.value - value) < Math.abs(list.tail.value - value))
 			return insertFromHead(list, value);
 
 		return insertFromTail(list, value);
 	}
 
-	private ListNode insertFromHead(LinkedList list, int value) {
+	private LinkedList insertFromHead(LinkedList list, int value) {
 		ListNode currentNode = list.head;
 		while (currentNode != null) {
-			if (currentNode.value <= value ) {
+			if (value > currentNode.value && currentNode.next != null) {
 				currentNode = currentNode.next;
+			} else if (value > currentNode.value) {
+				ListNode newElement = new ListNode();
+				newElement.value = value;
+				newElement.prev = currentNode;
+				currentNode.next = newElement;
+
+				updateHeadOrTail(currentNode, newElement, list);
+				break;
 			} else {
 				ListNode newElement = new ListNode();
 				newElement.value = value;
@@ -34,20 +51,29 @@ public class Ab1Impl implements Ab1 {
 			}
 		}
 
-		return list.head;
+		return list;
 	}
 
-	private ListNode insertFromTail(LinkedList list, int value) {
+	private LinkedList insertFromTail(LinkedList list, int value) {
 		ListNode currentNode = list.tail;
 		while (currentNode != null) {
-			if (value <= currentNode.value) {
+			if (value < currentNode.value && currentNode.prev != null) {
 				currentNode = currentNode.prev;
+			} else if (value < currentNode.value) {
+				ListNode newElement = new ListNode();
+				newElement.value = value;
+				newElement.next = currentNode;
+				currentNode.prev = newElement;
+
+				updateHeadOrTail(currentNode, newElement, list);
+				break;
 			} else {
 				ListNode newElement = new ListNode();
 				newElement.value = value;
 				newElement.prev = currentNode;
 				if (currentNode.next != null) {
 					newElement.next = currentNode.next;
+					currentNode.next.prev = newElement;
 				}
 				currentNode.next = newElement;
 
@@ -56,21 +82,28 @@ public class Ab1Impl implements Ab1 {
 			}
 		}
 
-		return list.head;
+		return list;
 	}
 
 	private void updateHeadOrTail(ListNode currentNode, ListNode newElement, LinkedList list) {
-		if (currentNode == list.head) {
+		if (currentNode == list.head && currentNode == list.tail) {
+			if (currentNode.value > newElement.value) {
+				list.head = newElement;
+			} else {
+				list.tail = newElement;
+			}
+		} else if (currentNode == list.head && currentNode.value >= newElement.value) {
 			list.head = newElement;
-		} else if (currentNode == list.tail) {
+		} else if (currentNode == list.tail && currentNode.value <= newElement.value) {
 			list.tail = newElement;
 		}
 	}
 
 	// Aufgabe a)
 	@Override
-	public LinkedList reverse(LinkedList list, ListNode tail)
+	public LinkedList reverse(LinkedList list)
 	{
+		ListNode tail = list.tail;
 		ListNode currentElement = tail;
 		list.head = currentElement;
 
@@ -185,7 +218,7 @@ public class Ab1Impl implements Ab1 {
 	{
 		int lastIndex = data.length-1;
 		while(lastIndex > 0) {
-			toHeap(data, lastIndex, false);
+			toHeap(data, lastIndex, true);
 			swapElements(data, 0, lastIndex);
 			lastIndex--;
 		}

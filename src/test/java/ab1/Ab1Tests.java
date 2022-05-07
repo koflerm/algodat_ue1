@@ -2,120 +2,328 @@ package ab1;
 
 import ab1.impl.Kofler.Ab1Impl;
 import ab1.Ab1.ListNode;
-import ab1.Ab1.LinkedList;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.IntStream;
+import java.time.Duration;
 
 import static org.junit.jupiter.api.Assertions.*;
-
-import java.util.Random;
 
 public class Ab1Tests {
 
 	private Random rand = new Random(System.currentTimeMillis());
+
 	private static Ab1 ab1Impl = new Ab1Impl();
-	private LinkedList ll;
-	private int[] array;
 
-	//Testfälle
-	@BeforeEach
-	public void initSortedLinkedList() {
-		ll = new LinkedList();
-		ListNode e1 = new ListNode();
-		ListNode e2 = new ListNode();
-		ListNode e3 = new ListNode();
-		ListNode e4 = new ListNode();
-		ListNode e5 = new ListNode();
+	private static int NUM_TESTS = 50;
+	private static int NUM_TESTS_LARGE = 200000;
+	//private static int NUM_TESTS = 1;
+	//private static int NUM_TESTS_LARGE = 1;
 
-		e1.value = 2;
-		e2.value = 3;
-		e3.value = 5;
-		e4.value = 7;
-		e5.value = 9;
-
-		e1.next = e2;
-		e2.prev = e1;
-		e2.next = e3;
-		e3.prev = e2;
-		e3.next = e4;
-		e4.prev = e3;
-		e4.next = e5;
-		e5.prev = e4;
-
-		ll.head = e1;
-		ll.tail = e5;
-
-		//array = new int[]{7,8,10,2,26,4,19,5,3,16,11,6,13,12};
-		//array = new int[]{34,7000,12,3213,5,321,5432,12,1,32,5,23,1,2,3,4};
-		array = new int[]{10,14,8,11,7,4,9,1,7,3,15,2,6,12};
-	}
+	//private static int ARRAY_SIZE_SMALL = 7500;
+	private static int ARRAY_SIZE_SMALL = 5;
+	//private static int ARRAY_SIZE_LARGE = 500000;
+	private static int ARRAY_SIZE_LARGE = 10;
+	//private static int ARRAY_SIZE_HUGE = 25_000_000;
+	private static int ARRAY_SIZE_HUGE = 10;
 
 	@Test
-	public void testInsertOfHeadElement() {
-		ListNode firstElement = ab1Impl.insert(ll, 1);
-
-		assertEquals(firstElement.value, 1);
-	}
-
-	@Test
-	public void testInsertOfTailElement() {
-		ListNode firstElement = ab1Impl.insert(ll, 12);
-
-		assertEquals(ll.tail.value, 12);
-	}
-
-	@Test
-	public void testReverseHead() {
-		LinkedList list = ab1Impl.reverse(ll, ll.tail);
-
-		assertEquals(list.head.value, 9);
-	}
-
-	@Test
-	public void testReverseTail() {
-		LinkedList list = ab1Impl.reverse(ll, ll.tail);
-
-		assertEquals(list.tail.value, 2);
-	}
-
-	@Test
-	public void testQuickSort() {
-		ab1Impl.quicksort(array);
-		int[] expectedResult = new int[]{1,2,3,4,6,7,7,8,9,10,11,12,14,15};
-
-		for (int i = 0; i < array.length; i++) {
-			assertEquals(expectedResult[i], array[i]);
+	public void testToMinHeapSmall()
+	{
+		for(int i = 0; i < NUM_TESTS; ++i)
+		{
+			int[] test = getRandomArray(ARRAY_SIZE_SMALL);
+			ab1Impl.toMinHeap(test);
+			assertTrue(checkHeap(0, test.length, test));
 		}
 	}
 
 	@Test
-	public void testMinHeap() {
-		ab1Impl.toMinHeap(array);
-		int[] expectedResult = new int[]{1,3,2,7,4,6,9,14,8,11,15,10,7,12};
-
-		for (int i = 0; i < array.length; i++) {
-			assertEquals(expectedResult[i], array[i]);
+	public void testToMinHeapLarge()
+	{
+		for(int i = 0; i < NUM_TESTS; ++i)
+		{
+			int[] test = getRandomArray(ARRAY_SIZE_LARGE);
+			ab1Impl.toMinHeap(test);
+			assertTrue(checkHeap(0, test.length, test));
 		}
 	}
 
 	@Test
-	public void testRemoveHeapElement() {
-		ab1Impl.toMinHeap(array);
-		ab1Impl.removeHeapElement(2, array.length, array);
-		int[] expectedResult = new int[]{1,3,6,7,4,7,9,14,8,11,15,12,10,2};
-
-		for (int i = 0; i < array.length; i++) {
-			assertEquals(expectedResult[i], array[i]);
+	public void testToMinHeapSorted()
+	{
+		for(int i = 0; i < NUM_TESTS; ++i)
+		{
+			int[] test = getRandomArray(ARRAY_SIZE_SMALL);
+			Arrays.sort(test);
+			ab1Impl.toMinHeap(test);
+			assertTrue(checkHeap(0, test.length, test));
 		}
 	}
 
 	@Test
-	public void testHeapsort() {
-		ab1Impl.heapsort(array);
-		int[] expectedResult = new int[]{1,2,3,4,6,7,7,8,9,10,11,12,14,15};
+	public void testToMinHeapCornerCases()
+	{
+		// empty array
+		int[] test = new int[0];
+		ab1Impl.toMinHeap(test);
 
-		for (int i = 0; i < array.length; i++) {
-			assertEquals(expectedResult[i], array[i]);
+		// array of size 1
+		test = getRandomArray(1);
+		ab1Impl.toMinHeap(test);
+		assertTrue(checkHeap(0, test.length, test));
+
+		// array with all elements zero
+		test = new int[ARRAY_SIZE_SMALL];
+		ab1Impl.toMinHeap(test);
+		assertTrue(checkHeap(0, test.length, test));
+
+		// array with all elements zero, except the last one
+		test = new int[ARRAY_SIZE_SMALL];
+		test[test.length - 1] = 1;
+		ab1Impl.toMinHeap(test);
+		assertTrue(checkHeap(0, test.length, test));
+	}
+
+	@Test
+	public void testRemoveHeapElementSmall()
+	{
+		for(int i = 0; i < NUM_TESTS; ++i)
+		{
+			int[] test = getRandomMinHeap(ARRAY_SIZE_SMALL);
+
+			for(int j = 0; j < NUM_TESTS; ++j)
+			{
+				int up = Math.abs(rand.nextInt((int)(Math.log(test.length - j - 1)/Math.log(2))));
+				int pos = test.length - j - 1;
+				for(; up >= 0; --up) pos = (pos - 1)/2;
+
+				int element = test[pos];
+				ab1Impl.removeHeapElement(pos, test.length - j, test);
+
+				assertTrue(checkHeap(0, test.length - j - 1, test));
+				assertEquals(element, test[test.length - j - 1]);
+			}
+
 		}
 	}
+
+	@Test
+	public void testRemoveHeapElementLarge()
+	{
+		for(int i = 0; i < NUM_TESTS; ++i)
+		{
+			int[] test = getRandomMinHeap(ARRAY_SIZE_LARGE);
+
+			for(int j = 0; j < NUM_TESTS; ++j)
+			{
+				int up = Math.abs(rand.nextInt((int)(Math.log(test.length - j - 1)/Math.log(2))));
+				int pos = test.length - j - 1;
+				for(; up >= 0; --up) pos = (pos - 1)/2;
+
+				int element = test[pos];
+				ab1Impl.removeHeapElement(pos, test.length - j, test);
+
+				assertTrue(checkHeap(0, test.length - j - 1, test));
+				assertEquals(element, test[test.length - j - 1]);
+			}
+
+		}
+	}
+
+	@Test
+	public void testHeapSortSmall()
+	{
+		for(int i = 0; i < NUM_TESTS; ++i)
+		{
+			int[] test = getRandomArray(ARRAY_SIZE_SMALL);
+			int[] copy = Arrays.copyOf(test, test.length);
+
+			ab1Impl.heapsort(test);
+
+
+			Arrays.sort(copy);
+			int[] reference = new int[ARRAY_SIZE_SMALL];
+			for(int j = 1; j <= copy.length; ++j)
+				reference[j-1] = copy[copy.length - j];
+
+			assertArrayEquals(reference, test);
+		}
+	}
+
+	@Test
+	public void testHeapSortLarge()
+	{
+		for(int i = 0; i < NUM_TESTS; ++i)
+		{
+			int[] test = getRandomArray(ARRAY_SIZE_LARGE);
+			int[] copy = Arrays.copyOf(test, test.length);
+			ab1Impl.heapsort(test);
+
+			Arrays.sort(copy);
+			int[] reference = new int[ARRAY_SIZE_LARGE];
+			for(int j = 1; j <= copy.length; ++j)
+				reference[j-1] = copy[copy.length - j];
+
+			assertArrayEquals(reference, test);
+		}
+	}
+
+	@Test
+	public void testListInsert()
+	{
+		for(int i = 0; i < NUM_TESTS; ++i)
+		{
+			int[] test = getRandomArray(ARRAY_SIZE_SMALL);
+			Ab1.LinkedList list = new Ab1.LinkedList();
+			list.head = null;
+			list.tail = null;
+			for(int j = 0; j < test.length; ++j)
+			{
+				list = ab1Impl.insert(list, test[j]);
+				assertNotNull(list);
+				assertNotNull(list.head);
+				assertNotNull(list.tail);
+			}
+
+			ListNode head = list.head;
+			Arrays.sort(test);
+			for(int j = 0; j < test.length; ++j)
+			{
+				assertEquals(test[j], head.value);
+				head = head.next;
+			}
+			assertNull(head);
+		}
+	}
+
+	@Test
+	public void testListReverse()
+	{
+		for(int i = 0; i < NUM_TESTS; ++i)
+		{
+			int[] test = getRandomArray(ARRAY_SIZE_SMALL);
+			printArray(test);
+			Ab1.LinkedList list = new Ab1.LinkedList();
+			list.head = null;
+			list.tail = null;
+			for(int j = 0; j < test.length; ++j)
+			{
+				list = ab1Impl.insert(list, test[j]);
+				assertNotNull(list);
+				assertNotNull(list.head);
+				assertNotNull(list.tail);
+			}
+
+			list = ab1Impl.reverse(list);
+			ListNode tail = list.tail;
+			Arrays.sort(test);
+			for(int j = 0; j < test.length; ++j)
+			{
+				assertEquals(test[j], tail.value);
+				tail = tail.prev;
+			}
+			assertNull(tail);
+		}
+	}
+
+	@Test
+	public void testListMaximum()
+	{
+		for(int i = 0; i < NUM_TESTS; ++i)
+		{
+			int[] test = getRandomArray(ARRAY_SIZE_SMALL);
+			int max = Integer.MIN_VALUE;
+			Ab1.LinkedList list = new Ab1.LinkedList();
+			list.head = null;
+			list.tail = null;
+			for(int j = 0; j < test.length; ++j)
+			{
+				list = ab1Impl.insert(list, test[j]);
+				assertNotNull(list);
+				assertNotNull(list.head);
+				assertNotNull(list.tail);
+				if(max < test[j]) max = test[j];
+			}
+
+			ListNode foundMax = ab1Impl.maximum(list);
+			assertEquals(max, foundMax.value);
+		}
+	}
+
+	@Test
+	public void testQuickSortSmall()
+	{
+		for(int i = 0; i < NUM_TESTS; ++i)
+		{
+			int[] test = getRandomArray(ARRAY_SIZE_SMALL);
+			int[] copy = Arrays.copyOf(test, test.length);
+			ab1Impl.quicksort(test);
+			Arrays.sort(copy);
+			assertArrayEquals(copy, test);
+		}
+	}
+
+	@Test
+	public void testQuickSortLarge()
+	{
+		for(int i = 0; i < NUM_TESTS; ++i)
+		{
+			int[] test = getRandomArray(ARRAY_SIZE_LARGE);
+			int[] copy = Arrays.copyOf(test, test.length);
+			ab1Impl.quicksort(test);
+			Arrays.sort(copy);
+			assertArrayEquals(copy, test);
+		}
+	}
+
+	private int[] getRandomArray(int size) {
+		int[] arr = new int[size];
+		for (int i = 0; i < size; ++i)
+			arr[i] = Math.abs(rand.nextInt(2 * size));
+		return arr;
+	}
+
+	private int[] getRandomMinHeap(int size) {
+		int[] arr = new int[size];
+		arr[0] = Math.abs(rand.nextInt(10));
+
+		int pos = 0;
+		while(true)
+		{
+			int l = 2*pos + 1;
+			int r = 2*pos + 2;
+
+			if(l >= arr.length) break;
+			arr[l] = arr[pos] + Math.abs(rand.nextInt(9) + 1);
+
+			if(r >= arr.length) break;
+			arr[r] = arr[pos] + Math.abs(rand.nextInt(9) + 1);
+
+			++pos;
+		}
+
+		return arr;
+	}
+
+	private boolean checkHeap(int start, int end, int[] array)
+	{
+		for (int i = start; i <= end / 2 - 1; ++i)
+			if (array[2*i + 1] < array[i] || 2*i + 2 < end && array[2*i + 2] < array[i])
+				return false;
+		return true;
+	}
+
+	private void printArray(int[] array)
+	{
+		for(int i = 0; i < array.length; ++i)
+			System.out.println("[" + i + "]: " + array[i]);
+	}
+
 }
