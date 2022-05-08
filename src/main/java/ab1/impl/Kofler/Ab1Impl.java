@@ -195,13 +195,17 @@ public class Ab1Impl implements Ab1 {
 	@Override
 	public void toMinHeap(int[] data)
 	{
-		toHeap(data, data.length-1, true);
+		if (data.length > 1) {
+			toHeap(data, data.length - 1, true);
+		}
 	}
 
 	// Aufgabe c)
 	public void toMaxHeap(int[] data)
 	{
-		toHeap(data, data.length-1, false);
+		if (data.length > 1) {
+			toHeap(data, data.length-1, false);
+		}
 	}
 
 	// Aufgabe c)
