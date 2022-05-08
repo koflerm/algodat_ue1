@@ -103,24 +103,27 @@ public class Ab1Impl implements Ab1 {
 	@Override
 	public LinkedList reverse(LinkedList list)
 	{
-		ListNode tail = list.tail;
-		ListNode currentElement = tail;
-		list.head = currentElement;
+		ListNode cursor = list.tail;
 
-		while(tail.prev != null) {
-			currentElement.next = tail.prev;
-			if (tail.next != null) {
-				currentElement.prev = tail.next;
-			}
-			tail = tail.prev;
-			currentElement = currentElement.next;
-			if (tail.prev == null) {
-				list.tail = tail;
-				currentElement.next = null;
-			}
+		LinkedList reversed = new LinkedList();
+		reversed.head = new ListNode();
+		ListNode current = reversed.head;
+		ListNode previous = null;
+
+		while (cursor.prev != null) {
+			current.value = cursor.value;
+			current.next = new ListNode();
+			current.prev = previous;
+			previous = current;
+			current = current.next;
+			cursor = cursor.prev;
 		}
 
-		return list;
+		current.value = cursor.value;
+		current.prev = previous;
+		reversed.tail = current;
+
+		return reversed;
 	}
 
 	// Aufgabe a)
