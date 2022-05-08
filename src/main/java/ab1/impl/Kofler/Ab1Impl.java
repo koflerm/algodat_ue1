@@ -130,8 +130,7 @@ public class Ab1Impl implements Ab1 {
 	@Override
 	public ListNode maximum(LinkedList list)
 	{
-		// YOUR CODE HERE
-		return null;
+		return list.tail;
 	}
 
 	// QUICKSORT
