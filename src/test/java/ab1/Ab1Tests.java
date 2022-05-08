@@ -23,15 +23,9 @@ public class Ab1Tests {
 
 	private static int NUM_TESTS = 50;
 	private static int NUM_TESTS_LARGE = 200000;
-	//private static int NUM_TESTS = 1;
-	//private static int NUM_TESTS_LARGE = 1;
-
-	//private static int ARRAY_SIZE_SMALL = 7500;
-	private static int ARRAY_SIZE_SMALL = 5;
-	//private static int ARRAY_SIZE_LARGE = 500000;
-	private static int ARRAY_SIZE_LARGE = 10;
-	//private static int ARRAY_SIZE_HUGE = 25_000_000;
-	private static int ARRAY_SIZE_HUGE = 10;
+	private static int ARRAY_SIZE_SMALL = 7500;
+	private static int ARRAY_SIZE_LARGE = 500000;
+	private static int ARRAY_SIZE_HUGE = 25_000_000;
 
 	@Test
 	public void testToMinHeapSmall()
@@ -209,7 +203,6 @@ public class Ab1Tests {
 		for(int i = 0; i < NUM_TESTS; ++i)
 		{
 			int[] test = getRandomArray(ARRAY_SIZE_SMALL);
-			printArray(test);
 			Ab1.LinkedList list = new Ab1.LinkedList();
 			list.head = null;
 			list.tail = null;

@@ -208,7 +208,7 @@ public class Ab1Impl implements Ab1 {
 	{
 		if (position < length) {
 			swapElements(minHeap, position, length-1);
-			toHeap(minHeap, minHeap.length-2, true);
+			toHeap(minHeap, length-2, true);
 		}
 	}
 
